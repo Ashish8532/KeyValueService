@@ -19,6 +19,37 @@ namespace KeyValueService.Controllers
 
 
         /// <summary>
+        /// Retrieves a key-value pair by the specified key.
+        /// </summary>
+        /// <param name="key">The key to search for in the key-value store.</param>
+        /// <returns>
+        ///   <para>Returns a NotFound response if the key does not exist.</para>
+        ///   <para>Returns an Ok response with the retrieved key-value pair and a success message if found.</para>
+        /// </returns>
+        [HttpGet("keys/{key}")]
+        public async Task<IActionResult> GetByKey(string key)
+        {
+            var keyValue = await _dbContext.KeyValues.FindAsync(key);
+
+            if (keyValue == null)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = StatusCodes.Status404NotFound,
+                    Message = "Key does not exist.",
+                });
+            }
+
+            return Ok(new ApiResponse<KeyValue>
+            {
+                StatusCode = StatusCodes.Status200OK,
+                Message = "Key-Value retrieved successfully.",
+                Data = keyValue
+            });
+        }
+
+
+        /// <summary>
         /// Adds a new key-value pair to the store.
         /// </summary>
         /// <param name="keyValue">The key-value pair to add.</param>
