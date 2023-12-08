@@ -79,5 +79,40 @@ namespace KeyValueService.Controllers
                 Data = keyValue
             });
         }
+
+
+        /// <summary>
+        /// Updates the value of an existing key in the key-value store.
+        /// </summary>
+        /// <param name="key">The key to update.</param>
+        /// <param name="value">The new value for the key.</param>
+        /// <returns>
+        ///   <para>Returns a NotFound response if the key does not exist.</para>
+        ///   <para>Returns an Ok response with the updated key-value pair and a success message if updated successfully.</para>
+        /// </returns>
+        [HttpPatch("keys/{key}/{value}")]
+        public async Task<IActionResult> UpdateValue(string key, string value)
+        {
+            var keyValues = await _dbContext.KeyValues.FindAsync(key);
+
+            if (keyValues == null)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = StatusCodes.Status404NotFound,
+                    Message = "Key does not exist.",
+                });
+            }
+
+            keyValues.Value = value;
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new ApiResponse<KeyValue>
+            {
+                StatusCode = StatusCodes.Status200OK,
+                Message = "Value updated successfully.",
+                Data = keyValues
+            });
+        }
     }
 }
