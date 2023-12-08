@@ -1,6 +1,10 @@
+using KeyValueService.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Configure the application to use an in-memory database named "KeyValueDB" for storing key-value pairs.
+builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("KeyValueDB"));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
