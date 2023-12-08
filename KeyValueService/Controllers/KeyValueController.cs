@@ -114,5 +114,39 @@ namespace KeyValueService.Controllers
                 Data = keyValues
             });
         }
+
+
+        /// <summary>
+        /// Deletes a key-value pair by the specified key.
+        /// </summary>
+        /// <param name="key">The key to delete from the key-value store.</param>
+        /// <returns>
+        ///   <para>Returns a NotFound response if the key does not exist.</para>
+        ///   <para>Returns an Ok response with the deleted key-value pair and a success message if deleted successfully.</para>
+        /// </returns>
+        [HttpDelete("keys/{key}")]
+        public async Task<IActionResult> DeleteByKey(string key)
+        {
+            var keyValue = await _dbContext.KeyValues.FindAsync(key);
+
+            if (keyValue == null)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = StatusCodes.Status404NotFound,
+                    Message = "Key does not exist.",
+                });
+            }
+
+            _dbContext.KeyValues.Remove(keyValue);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new ApiResponse<KeyValue>
+            {
+                StatusCode = StatusCodes.Status200OK,
+                Message = "Key deleted successfully",
+                Data = keyValue
+            });
+        }
     }
 }
